@@ -4,8 +4,7 @@
 
 #include <QMainWindow>
 #include <QModelIndex>
-#include "highlighter.h"
-#include "codeeditor.h"
+
 
 class QTextEdit;
 class QListWidget;
@@ -39,7 +38,7 @@ private:
 
     QsciScintilla *newEditor(QFile &file);
     QListWidget *customerList;
-    Highlighter *highlighter;
+
     QTreeView *tree;
     QFileSystemModel *model;
     QTabWidget *tabWidget;
