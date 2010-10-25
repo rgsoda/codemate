@@ -15,6 +15,7 @@ class QFileSystemModel;
 class QPlainTextEdit;
 class QTabBar;
 class QFile;
+class QsciScintilla;
 
 class MainWindow : public QMainWindow
 {
@@ -36,7 +37,7 @@ private:
     void setupHelpMenu();
     void setupWidgets();
 
-    CodeEditor *newEditor(QFile &file);
+    QsciScintilla *newEditor(QFile &file);
     QListWidget *customerList;
     Highlighter *highlighter;
     QTreeView *tree;

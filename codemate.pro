@@ -20,3 +20,4 @@ HEADERS  += mainwindow.h \
     highlighter.h
 
 FORMS    += mainwindow.ui
+LIBS     += -lqscintilla2

@@ -1,4 +1,6 @@
 #include <QtGui>
+#include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexerpython.h>
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -71,25 +73,49 @@ void MainWindow::openFile(const QString &path)
 }
 
 void MainWindow::closeFile(){
-    CodeEditor *editor = dynamic_cast<CodeEditor*>(tabWidget->currentWidget());
-    if( editor->textModified == 1 ) {
-    } else {
-        delete(tabWidget->currentWidget());
-    }
-
+    delete(tabWidget->currentWidget());
 }
 
 
-CodeEditor *MainWindow::newEditor(QFile &file)
+QsciScintilla *MainWindow::newEditor(QFile &file)
 {
     QFont font;
     font.setFamily("Monaco");
     font.setFixedPitch(true);
-    font.setPointSize(10);
-    CodeEditor *editor = new CodeEditor(this);
-    editor->setFont(font);
-    editor->setPlainText(file.readAll());
-    highlighter = new Highlighter(editor->document());
+    font.setPointSize(9);
+
+
+    QsciScintilla *editor = new QsciScintilla(this);
+    QsciLexerPython *lexer = new QsciLexerPython();
+
+    lexer->setDefaultFont(font);
+    lexer->setFont(font);
+
+    editor->setLexer(lexer);
+
+    editor->setMarginsFont(font);
+
+    editor->setMarginWidth(0, 20);
+    editor->setMarginLineNumbers(0, true);
+
+    editor->setEdgeMode(QsciScintilla::EdgeLine);
+    editor->setEdgeColumn(80);
+    editor->setEdgeColor(QColor("#FF0000"));
+
+    editor->setFolding(QsciScintilla::PlainFoldStyle);
+    editor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+
+    editor->setAutoCompletionSource(QsciScintilla::AcsAll);
+
+    editor->setCaretLineVisible(true);
+    editor->setCaretLineBackgroundColor(QColor("#CDA869"));
+
+    editor->setMarginsBackgroundColor(QColor("#333333"));
+    editor->setMarginsForegroundColor(QColor("#CCCCCC"));
+
+    editor->setFoldMarginColors(QColor("#99CC66"),QColor("#333300"));
+    editor->setText(file.readAll());
+
     tabWidget->insertTab(0,dynamic_cast<QWidget*>(editor),file.fileName());
     return editor;
 }
