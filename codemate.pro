@@ -11,13 +11,9 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    codeeditor.cpp \
-    highlighter.cpp
+        mainwindow.cpp
 
-HEADERS  += mainwindow.h \
-    codeeditor.h \
-    highlighter.h
+HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
 LIBS     += -lqscintilla2
