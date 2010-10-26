@@ -15,5 +15,10 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h
 
-FORMS    += mainwindow.ui
+FORMS    +=
 LIBS     += -lqscintilla2
+
+RESOURCES +=
+
+OTHER_FILES += \
+    codemate.style

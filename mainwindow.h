@@ -26,9 +26,16 @@ public:
 public slots:
     void about();
     void newFile();
-    void openFile(const QString &path = QString());
-    void closeFile();
+    void openFile(QString &path);
+
+    bool closeFile(QString &filename);
+    bool closeActualFile();
+
+    bool saveFile(QString &filename);
+    bool saveActualFile();
+
     void doubleClicked(QModelIndex);
+    void tabCloseRequested(int);
 
 private:
 
@@ -37,11 +44,13 @@ private:
     void setupWidgets();
 
     QsciScintilla *newEditor(QFile &file);
-    QListWidget *customerList;
 
     QTreeView *tree;
     QFileSystemModel *model;
     QTabWidget *tabWidget;
+    QStatusBar *statusBar;
+
+    QMap<QString,QWidget *> openFileWidgetList;
 
 };
 

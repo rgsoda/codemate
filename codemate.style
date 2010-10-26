@@ -1,0 +1,33 @@
+ QTabWidget::pane { /* The tab widget frame */
+     background: #EDEDED;
+ }
+
+ QTabWidget::tab-bar {
+     left: 0px; /* move to the right by 5px */
+ }
+
+ QTabBar::tab {
+     background: #FCFBF7;
+     border: 1px solid #B7B7B7;
+
+     border-top-left-radius: 4px;
+     border-top-right-radius: 4px;
+     min-width: 8ex;
+     height: 20px;
+     padding: 1px;
+     margin-left: 2px;
+ }
+
+ QTabBar::tab:selected, QTabBar::tab:hover {
+     background: #FCFBF7;
+ }
+
+ QTabBar::tab:!selected {
+     background: #D6CCD7;
+ }
+
+ QTabBar::close-button {
+     subcontrol-position: left;
+ }
+ QTabBar::close-button:hover {
+ }
