@@ -112,7 +112,7 @@ bool MainWindow::closeActualFile() {
         return false;
     }
     openFileWidgetList.remove(filename);
-    delete(tabWidget->currentWidget());
+    delete tabWidget->currentWidget();
     return true;
 }
 
@@ -124,7 +124,7 @@ bool MainWindow::closeFile(QString &filename)
         return false;
     }
     openFileWidgetList.remove(filename);
-    delete(tabWidget->currentWidget());
+    delete tabWidget->currentWidget();
     return true;
 }
 
@@ -235,6 +235,6 @@ void MainWindow::doubleClicked(QModelIndex index) {
 }
 
 void MainWindow::tabCloseRequested(int index) {
-    delete(tabWidget->widget(index));
+    delete tabWidget->widget(index);
 }
 
