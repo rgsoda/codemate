@@ -51,9 +51,9 @@ void MainWindow::setupWidgets()
     tabWidget->setTabsClosable(true);
     tabWidget->setFont(font);
 
-    QFile styleDefinition("/home/soda/Code/codemate/codemate.style");
+    QFile styleDefinition(QDir::homePath()+"/.codemate/codemate.style");
     if (!styleDefinition.open(QIODevice::ReadOnly | QIODevice::Text))
-        std::cout << " problemy " << std::endl;
+        statusBar->showMessage("CSSStyle not found");
     QString content = styleDefinition.readAll();
 
     tabWidget->setStyleSheet(content);
@@ -82,25 +82,27 @@ void MainWindow::newFile()
     newEditor(file);
 }
 
+void MainWindow::openFile() {
+    QString path = QFileDialog::getOpenFileName(this,
+        tr("Open File"), "", "All Files (*.*)");
+    openFile(path);
+}
+
 void MainWindow::openFile(QString &path)
 {
-    QString fileName = path;
-    if (fileName.isNull())
-        fileName = QFileDialog::getOpenFileName(this,
-            tr("Open File"), "", "All Files (*.*)");
-
-    if (!fileName.isEmpty()) {
-        QFile file(fileName);
+    if (!path.isEmpty()) {
+        QFile file(path);
         if (file.open(QFile::ReadOnly | QFile::Text)) {
-            if (openFileWidgetList.contains(fileName)) {
-                tabWidget->setCurrentWidget(openFileWidgetList.value(fileName));
+            if (openFileWidgetList.contains(path)) {
+                tabWidget->setCurrentWidget(openFileWidgetList.value(path));
             } else {
-                openFileWidgetList.insert(fileName,newEditor(file));
+                openFileWidgetList.insert(path,newEditor(file));
                 tabWidget->setCurrentIndex(0);
             }
         }
     }
 }
+
 
 bool MainWindow::closeActualFile() {
     QString filename = openFileWidgetList.key(tabWidget->currentWidget());

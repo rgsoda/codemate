@@ -26,6 +26,8 @@ public:
 public slots:
     void about();
     void newFile();
+
+    void openFile();
     void openFile(QString &path);
 
     bool closeFile(QString &filename);
