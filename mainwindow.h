@@ -4,7 +4,8 @@
 
 #include <QMainWindow>
 #include <QModelIndex>
-
+#include <QSettings>
+#include <snapopen.h>
 
 class QTextEdit;
 class QListWidget;
@@ -15,6 +16,7 @@ class QPlainTextEdit;
 class QTabBar;
 class QFile;
 class QsciScintilla;
+class QSettings;
 
 class MainWindow : public QMainWindow
 {
@@ -22,13 +24,13 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = 0);
+    void openFile(QString &path);
 
 public slots:
     void about();
     void newFile();
 
     void openFile();
-    void openFile(QString &path);
 
     bool closeFile(QString &filename);
     bool closeActualFile();
@@ -39,11 +41,14 @@ public slots:
     void doubleClicked(QModelIndex);
     void tabCloseRequested(int);
 
+    void snapOpen();
+
 private:
 
     void setupFileMenu();
     void setupHelpMenu();
     void setupWidgets();
+    void initSettings();
 
     QsciScintilla *newEditor(QFile &file);
 
@@ -51,9 +56,9 @@ private:
     QFileSystemModel *model;
     QTabWidget *tabWidget;
     QStatusBar *statusBar;
-
     QMap<QString,QWidget *> openFileWidgetList;
-
+    QSettings settings;
+    SnapOpen *snapopen;
 };
 
 

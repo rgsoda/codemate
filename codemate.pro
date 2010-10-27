@@ -11,9 +11,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    snapopen.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    snapopen.h
 
 FORMS    +=
 LIBS     += -lqscintilla2

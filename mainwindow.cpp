@@ -7,14 +7,18 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    initSettings();
     setupFileMenu();
     setupHelpMenu();
-
     setupWidgets();
 
     setWindowTitle(tr("CodeMate"));
 }
 
+void MainWindow::initSettings() {
+    QString path = QDir::homePath() + "/.codemate/codemate.ini";
+    QSettings settings(path,QSettings::IniFormat);
+}
 void MainWindow::setupWidgets()
 {
 
@@ -40,7 +44,6 @@ void MainWindow::setupWidgets()
     tree->setColumnHidden(2,true);
     tree->setColumnHidden(3,true);
     tree->sortByColumn(0);
-
     dock->setWidget(tree);
     connect(tree, SIGNAL(doubleClicked(QModelIndex)), this,
                        SLOT(doubleClicked(QModelIndex)));
@@ -75,19 +78,16 @@ void MainWindow::about()
                    "the QSyntaxHighlighter class and describing " \
                    "highlighting rules using regular expressions.</p>"));
 }
-
 void MainWindow::newFile()
 {
     QFile file("unnamed.txt");
     newEditor(file);
 }
-
 void MainWindow::openFile() {
     QString path = QFileDialog::getOpenFileName(this,
         tr("Open File"), "", "All Files (*.*)");
     openFile(path);
 }
-
 void MainWindow::openFile(QString &path)
 {
     if (!path.isEmpty()) {
@@ -102,8 +102,6 @@ void MainWindow::openFile(QString &path)
         }
     }
 }
-
-
 bool MainWindow::closeActualFile() {
     QString filename = openFileWidgetList.key(tabWidget->currentWidget());
     QsciScintilla *editor = dynamic_cast<QsciScintilla*>(tabWidget->currentWidget());
@@ -115,7 +113,6 @@ bool MainWindow::closeActualFile() {
     delete tabWidget->currentWidget();
     return true;
 }
-
 bool MainWindow::closeFile(QString &filename)
 {
     QsciScintilla *editor = dynamic_cast<QsciScintilla*>(openFileWidgetList.value(filename));
@@ -127,12 +124,10 @@ bool MainWindow::closeFile(QString &filename)
     delete tabWidget->currentWidget();
     return true;
 }
-
 bool MainWindow::saveActualFile(){
     QString filename = openFileWidgetList.key(tabWidget->currentWidget());
     return saveFile(filename);
 }
-
 bool MainWindow::saveFile(QString &filename) {
     QFile file(filename);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
@@ -153,15 +148,20 @@ bool MainWindow::saveFile(QString &filename) {
     dynamic_cast<QsciScintilla*>(tabWidget->currentWidget())->setModified(false);
     return true;
 }
-
 QsciScintilla *MainWindow::newEditor(QFile &file)
 {
     QFont font;
-    font.setFamily("Monaco");
-    font.setFixedPitch(true);
-    font.setPointSize(9);
+    QString fontName = settings.value("editor/font-name","Courier").toString();
+    std::cout << fontName.toStdString() << std::endl;
+    font.setFamily(settings.value("editor/font-name","Monaco").toString());
+    font.setFixedPitch(settings.value("editor/font-fixed-pitch",true).toBool());
+    font.setPointSize(settings.value("editor/font-size",9).toInt());
 
     QsciScintilla *editor = new QsciScintilla(this);
+    editor->setAutoIndent(true);
+    editor->setAutoCompletionThreshold(2);
+    editor->setAutoCompletionSource(QsciScintilla::AcsAPIs);
+
     QsciLexerPython *lexer = new QsciLexerPython();
 
     lexer->setDefaultFont(font);
@@ -174,21 +174,26 @@ QsciScintilla *MainWindow::newEditor(QFile &file)
     editor->setMarginLineNumbers(0, true);
 
     editor->setEdgeMode(QsciScintilla::EdgeLine);
-    editor->setEdgeColumn(80);
-    editor->setEdgeColor(QColor("#FF0000"));
+    editor->setEdgeColumn(settings.value("editor/margin-edge-column",80).toInt());
+    editor->setEdgeColor(QColor(settings.value("editor/margin-edge-color","#FF0000").toString()));
 
     editor->setFolding(QsciScintilla::PlainFoldStyle);
     editor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
 
     editor->setAutoCompletionSource(QsciScintilla::AcsAll);
 
-    editor->setCaretLineVisible(true);
-    editor->setCaretLineBackgroundColor(QColor("#CDA869"));
+    editor->setCaretLineVisible(settings.value("editor/carret-line-visible",true).toBool());
+    editor->setCaretLineBackgroundColor(
+            QColor(settings.value("editor/carret-line-color","#E3E3E3").toString()));
 
-    editor->setMarginsBackgroundColor(QColor("#E3E3E3"));
-    editor->setMarginsForegroundColor(QColor("#A7A7AF"));
+    editor->setMarginsBackgroundColor(
+            QColor(settings.value("editor/margin-background-color","#E3E3E3").toString()));
+    editor->setMarginsForegroundColor(
+            QColor(settings.value("editor/margin-foregroud-color","#A7A7AF").toString()));
 
-    editor->setFoldMarginColors(QColor("#E3E3E3"),QColor("#E3E3E3"));
+    editor->setFoldMarginColors(
+            QColor(settings.value("editor/fold-margin-background-color","#E3E3E3").toString()),
+            QColor(settings.value("editor/margin-foregroud-color","#E3E3E3").toString()));
     editor->setText(file.readAll());
     editor->setModified(false);
 
@@ -197,7 +202,6 @@ QsciScintilla *MainWindow::newEditor(QFile &file)
     return editor;
 
 }
-
 void MainWindow::setupFileMenu()
 {
     QMenu *fileMenu = new QMenu(tr("&File"), this);
@@ -209,6 +213,9 @@ void MainWindow::setupFileMenu()
     fileMenu->addAction(tr("&Open..."), this, SLOT(openFile()),
                         QKeySequence::Open);
 
+    fileMenu->addAction(tr("&SnapOpen..."), this, SLOT(snapOpen()),
+                        QKeySequence::Print);
+
     fileMenu->addAction(tr("&Close..."), this, SLOT(closeActualFile()),
                         QKeySequence::Close);
 
@@ -218,7 +225,6 @@ void MainWindow::setupFileMenu()
     fileMenu->addAction(tr("E&xit"), qApp, SLOT(quit()),
                         QKeySequence::Quit);
 }
-
 void MainWindow::setupHelpMenu()
 {
     QMenu *helpMenu = new QMenu(tr("&Help"), this);
@@ -227,14 +233,14 @@ void MainWindow::setupHelpMenu()
     helpMenu->addAction(tr("&About"), this, SLOT(about()));
     helpMenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
-
-
 void MainWindow::doubleClicked(QModelIndex index) {
     QString fpath = model->filePath(index);
     this->openFile(fpath);
 }
-
+void MainWindow::snapOpen() {
+    snapopen = new SnapOpen(this);
+    snapopen->show();
+}
 void MainWindow::tabCloseRequested(int index) {
     delete tabWidget->widget(index);
 }
-
