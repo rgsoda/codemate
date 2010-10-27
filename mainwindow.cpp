@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     setupWidgets();
 
     setWindowTitle(tr("CodeMate"));
+    resize(800, 600);
 }
 
 void MainWindow::initSettings() {

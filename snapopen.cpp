@@ -54,7 +54,7 @@ void SnapOpen::showFiles(const QDir &directory, const QString &filter)
 
 void SnapOpen::prepareWidgets()
 {
-    filesTable = new QTableWidget(0, 3);
+    filesTable = new QTableWidget(0, 2);
     QStringList labels;
     labels << tr("File") << tr("Dir");
     filesTable->setHorizontalHeaderLabels(labels);
@@ -70,9 +70,6 @@ void SnapOpen::prepareWidgets()
 
     connect(fileNameInput,SIGNAL(textChanged(QString)),
             this,SLOT(fileNameInputChanged()));
-
-    connect(filesTable,SIGNAL(itemPressed(QTableWidgetItem*)),
-            this,SLOT(openSnapedFile(QTableWidgetItem*)));
 
     connect(filesTable,SIGNAL(itemPressed(QTableWidgetItem*)),
             this,SLOT(openSnapedFile(QTableWidgetItem*)));
