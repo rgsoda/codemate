@@ -17,6 +17,9 @@ void SnapOpen::fileNameInputChanged() {
     QString filter = fileNameInput->text()+"*";
     showFiles(QDir::currentPath(),filter);
 }
+void SnapOpen::clearFilter() {
+    fileNameInput->setText("");
+}
 
 void SnapOpen::showFiles(const QDir &directory, const QString &filter)
 {

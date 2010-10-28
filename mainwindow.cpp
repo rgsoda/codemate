@@ -1,11 +1,9 @@
 #include <QtGui>
-#include <Qsci/qsciscintilla.h>
-#include <Qsci/qscilexerpython.h>
 #include "mainwindow.h"
 #include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent), snapopen(0)
 {
     initSettings();
     setupFileMenu();
@@ -14,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle(tr("CodeMate"));
     resize(800, 600);
+
 }
 
 void MainWindow::initSettings() {
@@ -55,7 +54,11 @@ void MainWindow::setupWidgets()
     tabWidget->setTabsClosable(true);
     tabWidget->setFont(font);
 
-    QFile styleDefinition(QDir::homePath()+"/.codemate/codemate.style");
+    statusBar = new QStatusBar(this);
+    statusBar->setFont(font);
+    setStatusBar(statusBar);
+
+    QFile styleDefinition(QDir::homePath()+"/.codemate/a.qss");
     if (!styleDefinition.open(QIODevice::ReadOnly | QIODevice::Text))
         statusBar->showMessage("CSSStyle not found");
     QString content = styleDefinition.readAll();
@@ -65,10 +68,6 @@ void MainWindow::setupWidgets()
 
     connect(tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(tabCloseRequested(int)));
     setCentralWidget(tabWidget);
-
-    statusBar = new QStatusBar(this);
-    statusBar->setFont(font);
-    setStatusBar(statusBar);
 
 }
 void MainWindow::about()
@@ -142,64 +141,22 @@ bool MainWindow::saveFile(QString &filename) {
     QTextStream out(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    out << dynamic_cast<QsciScintilla*>(tabWidget->currentWidget())->text();
+    out << dynamic_cast<SciEditor*>(tabWidget->currentWidget())->text();
     QApplication::restoreOverrideCursor();
 
     statusBar->showMessage(tr("File saved"), 2000);
-    dynamic_cast<QsciScintilla*>(tabWidget->currentWidget())->setModified(false);
+    dynamic_cast<SciEditor*>(tabWidget->currentWidget())->setModified(false);
     return true;
 }
-QsciScintilla *MainWindow::newEditor(QFile &file)
+SciEditor *MainWindow::newEditor(QFile &file)
 {
-    QFont font;
-    QString fontName = settings.value("editor/font-name","Courier").toString();
-    std::cout << fontName.toStdString() << std::endl;
-    font.setFamily(settings.value("editor/font-name","Monaco").toString());
-    font.setFixedPitch(settings.value("editor/font-fixed-pitch",true).toBool());
-    font.setPointSize(settings.value("editor/font-size",9).toInt());
+    QFileInfo *fileInfo = new QFileInfo(file);
+    SciEditor *editor = new SciEditor(this);
 
-    QsciScintilla *editor = new QsciScintilla(this);
-    editor->setAutoIndent(true);
-    editor->setAutoCompletionThreshold(2);
-    editor->setAutoCompletionSource(QsciScintilla::AcsAPIs);
-
-    QsciLexerPython *lexer = new QsciLexerPython();
-
-    lexer->setDefaultFont(font);
-    lexer->setFont(font);
-
-    editor->setLexer(lexer);
-    editor->setMarginsFont(font);
-
-    editor->setMarginWidth(0, 20);
-    editor->setMarginLineNumbers(0, true);
-
-    editor->setEdgeMode(QsciScintilla::EdgeLine);
-    editor->setEdgeColumn(settings.value("editor/margin-edge-column",80).toInt());
-    editor->setEdgeColor(QColor(settings.value("editor/margin-edge-color","#FF0000").toString()));
-
-    editor->setFolding(QsciScintilla::PlainFoldStyle);
-    editor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
-
-    editor->setAutoCompletionSource(QsciScintilla::AcsAll);
-
-    editor->setCaretLineVisible(settings.value("editor/carret-line-visible",true).toBool());
-    editor->setCaretLineBackgroundColor(
-            QColor(settings.value("editor/carret-line-color","#E3E3E3").toString()));
-
-    editor->setMarginsBackgroundColor(
-            QColor(settings.value("editor/margin-background-color","#E3E3E3").toString()));
-    editor->setMarginsForegroundColor(
-            QColor(settings.value("editor/margin-foregroud-color","#A7A7AF").toString()));
-
-    editor->setFoldMarginColors(
-            QColor(settings.value("editor/fold-margin-background-color","#E3E3E3").toString()),
-            QColor(settings.value("editor/margin-foregroud-color","#E3E3E3").toString()));
     editor->setText(file.readAll());
     editor->setModified(false);
-
-    QFileInfo *fileInfo = new QFileInfo(file);
     tabWidget->insertTab(tabWidget->currentIndex(), editor,fileInfo->completeBaseName());
+    tabWidget->setMovable(true);
     return editor;
 
 }
@@ -239,9 +196,14 @@ void MainWindow::doubleClicked(QModelIndex index) {
     this->openFile(fpath);
 }
 void MainWindow::snapOpen() {
-    snapopen = new SnapOpen(this);
+    if(snapopen == 0) {
+        snapopen = new SnapOpen(this);
+    }
+    snapopen->clearFilter();
     snapopen->show();
 }
 void MainWindow::tabCloseRequested(int index) {
     delete tabWidget->widget(index);
 }
+
+

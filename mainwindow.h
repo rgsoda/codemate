@@ -6,6 +6,7 @@
 #include <QModelIndex>
 #include <QSettings>
 #include <snapopen.h>
+#include <scieditor.h>
 
 class QTextEdit;
 class QListWidget;
@@ -15,7 +16,7 @@ class QFileSystemModel;
 class QPlainTextEdit;
 class QTabBar;
 class QFile;
-class QsciScintilla;
+
 class QSettings;
 
 class MainWindow : public QMainWindow
@@ -43,6 +44,7 @@ public slots:
 
     void snapOpen();
 
+
 private:
 
     void setupFileMenu();
@@ -50,7 +52,7 @@ private:
     void setupWidgets();
     void initSettings();
 
-    QsciScintilla *newEditor(QFile &file);
+    SciEditor *newEditor(QFile &file);
 
     QTreeView *tree;
     QFileSystemModel *model;

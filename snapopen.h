@@ -18,6 +18,7 @@ public:
 
 public slots:
     void openSnapedFile(QTableWidgetItem* item);
+    void clearFilter();
 
 private slots:
     void fileNameInputChanged();
