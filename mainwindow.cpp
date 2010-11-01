@@ -1,6 +1,8 @@
 #include <QtGui>
 #include "mainwindow.h"
 #include <iostream>
+#include "mateeditor.h"
+#include "qce/qeditor.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), snapopen(0)
@@ -25,7 +27,7 @@ void MainWindow::setupWidgets()
     QFont font;
     font.setFamily("Monaco");
     font.setFixedPitch(true);
-    font.setPointSize(9);
+    font.setPointSize(10);
 
     QDockWidget *dock = new QDockWidget(tr("Files"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea);
@@ -80,8 +82,8 @@ void MainWindow::about()
 }
 void MainWindow::newFile()
 {
-    QFile file("unnamed.txt");
-    newEditor(file);
+
+    newEditor("unnamed.txt");
 }
 void MainWindow::openFile() {
     QString path = QFileDialog::getOpenFileName(this,
@@ -96,7 +98,7 @@ void MainWindow::openFile(QString &path)
             if (openFileWidgetList.contains(path)) {
                 tabWidget->setCurrentWidget(openFileWidgetList.value(path));
             } else {
-                openFileWidgetList.insert(path,newEditor(file));
+                openFileWidgetList.insert(path,newEditor(path));
                 tabWidget->setCurrentIndex(0);
             }
         }
@@ -104,7 +106,7 @@ void MainWindow::openFile(QString &path)
 }
 bool MainWindow::closeActualFile() {
     QString filename = openFileWidgetList.key(tabWidget->currentWidget());
-    QsciScintilla *editor = dynamic_cast<QsciScintilla*>(tabWidget->currentWidget());
+    MateEditor *editor = dynamic_cast<MateEditor*>(tabWidget->currentWidget());
     if(editor->isModified()){
         statusBar->showMessage(tr("Save first"), 2000);
         return false;
@@ -115,7 +117,7 @@ bool MainWindow::closeActualFile() {
 }
 bool MainWindow::closeFile(QString &filename)
 {
-    QsciScintilla *editor = dynamic_cast<QsciScintilla*>(openFileWidgetList.value(filename));
+    MateEditor *editor = dynamic_cast<MateEditor*>(openFileWidgetList.value(filename));
     if(editor->isModified()){
         statusBar->showMessage(tr("Save first"), 2000);
         return false;
@@ -141,23 +143,23 @@ bool MainWindow::saveFile(QString &filename) {
     QTextStream out(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    out << dynamic_cast<SciEditor*>(tabWidget->currentWidget())->text();
+    //out << dynamic_cast<CodeEditor*>(tabWidget->currentWidget())->document()->toPlainText();
     QApplication::restoreOverrideCursor();
 
     statusBar->showMessage(tr("File saved"), 2000);
-    dynamic_cast<SciEditor*>(tabWidget->currentWidget())->setModified(false);
+    //dynamic_cast<CodeEditor*>(tabWidget->currentWidget())->setModified(false);
     return true;
 }
-SciEditor *MainWindow::newEditor(QFile &file)
+MateEditor *MainWindow::newEditor(QString path)
 {
-    QFileInfo *fileInfo = new QFileInfo(file);
-    SciEditor *editor = new SciEditor(this);
 
-    editor->setText(file.readAll());
-    editor->setModified(false);
-    tabWidget->insertTab(tabWidget->currentIndex(), editor,fileInfo->completeBaseName());
+    MateEditor *mate_editor = new MateEditor(this);
+    QEditor *editor_widget = mate_editor->getEditor();
+    editor_widget->load(path);
+    editor_widget->setFileName(path);
+    tabWidget->insertTab(tabWidget->currentIndex(), editor_widget ,path);
     tabWidget->setMovable(true);
-    return editor;
+    return mate_editor;
 
 }
 void MainWindow::setupFileMenu()

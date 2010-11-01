@@ -13,11 +13,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     snapopen.cpp \
-    scieditor.cpp
+    mateeditor.cpp \
+
 
 HEADERS  += mainwindow.h \
     snapopen.h \
-    scieditor.h
+    mateeditor.h \
+
 
 FORMS    +=
 LIBS     += -lqscintilla2
@@ -26,3 +28,8 @@ RESOURCES +=
 
 OTHER_FILES += \
     codemate.style
+DEPENDPATH += . qce
+INCLUDEPATH += . qce
+DEPENDPATH += . qce/document qce/language qce/widgets qce/qnfa
+INCLUDEPATH += . qce/document qce/language qce/widgets qce/qnfa
+#include(qce/lib.pri)

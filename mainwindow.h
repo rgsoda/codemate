@@ -6,7 +6,7 @@
 #include <QModelIndex>
 #include <QSettings>
 #include <snapopen.h>
-#include <scieditor.h>
+#include <mateeditor.h>
 
 class QTextEdit;
 class QListWidget;
@@ -52,8 +52,8 @@ private:
     void setupWidgets();
     void initSettings();
 
-    SciEditor *newEditor(QFile &file);
-
+    //SciEditor *newEditor(QFile &file);
+    MateEditor *newEditor(QString path);
     QTreeView *tree;
     QFileSystemModel *model;
     QTabWidget *tabWidget;
