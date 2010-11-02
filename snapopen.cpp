@@ -3,6 +3,7 @@
 #include <iostream>
 #include "mainwindow.h"
 
+
 SnapOpen::SnapOpen(QWidget *parent) :
     QDialog(parent)
 {
@@ -69,6 +70,7 @@ void SnapOpen::prepareWidgets()
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(fileNameInput);
     mainLayout->addWidget(filesTable);
+
     setLayout(mainLayout);
 
     connect(fileNameInput,SIGNAL(textChanged(QString)),

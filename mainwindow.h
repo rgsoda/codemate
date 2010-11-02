@@ -6,6 +6,7 @@
 #include <QModelIndex>
 #include <QSettings>
 #include <snapopen.h>
+#include <snippeteditor.h>
 #include <mateeditor.h>
 #include "qce/qeditsession.h"
 
@@ -55,6 +56,9 @@ public slots:
     void tabCloseRequested(int);
 
     void snapOpen();
+
+    void showSnippetEditor();
+
     QLanguageFactory* getEditorLanguageFactory();
     QSnippetBinding* getEditorSnippetBinding();
 
@@ -66,6 +70,7 @@ private:
     void setupEditor();
     void initSettings();
 
+
     //SciEditor *newEditor(QFile &file);
     int newEditor(QString path);
     QTreeView *tree;
@@ -75,6 +80,7 @@ private:
     QMap<QString,int> openFileWidgetList;
     QSettings settings;
     SnapOpen *snapopen;
+    SnippetEditor *snippetEditor;
     QEditSession *editSession;
 
     QEditConfig *m_config;

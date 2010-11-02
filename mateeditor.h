@@ -2,7 +2,6 @@
 #define MATEEDITOR_H
 
 #include <QWidget>
-#include "qce/qeditor.h"
 #include "mainwindow.h"
 
 class QEditor;

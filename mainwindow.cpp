@@ -20,16 +20,16 @@
 
 #include "qce/snippets/qsnippetmanager.h"
 #include "qce/snippets/qsnippetbinding.h"
+#include "qce/snippets/qsnippetedit.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), snapopen(0)
+    : QMainWindow(parent), snapopen(0), snippetEditor(0)
 {
     initSettings();
     setupFileMenu();
     setupHelpMenu();
     setupWidgets();
     setupEditor();
-
 
     setWindowTitle(tr("CodeMate"));
     resize(800, 600);
@@ -190,6 +190,7 @@ int MainWindow::newEditor(QString path)
     QEditor *editor_widget = mate_editor->getEditor();
     m_languages->setLanguage(editor_widget, path);
     editor_widget->load(path);
+    editor_widget->setInputBinding(m_snippetBinding);
 
     editSession->addEditor(editor_widget);
     int nextIndex = tabWidget->currentIndex()+1;
@@ -212,7 +213,7 @@ void MainWindow::setupFileMenu()
                         QKeySequence::Open);
 
     fileMenu->addAction(tr("&SnapOpen..."), this, SLOT(snapOpen()),
-                        QKeySequence::Print);
+                        QKeySequence(Qt::CTRL + Qt::Key_P));
 
     fileMenu->addAction(tr("&Close..."), this, SLOT(closeActualFile()),
                         QKeySequence::Close);
@@ -222,6 +223,10 @@ void MainWindow::setupFileMenu()
 
     fileMenu->addAction(tr("E&xit"), qApp, SLOT(quit()),
                         QKeySequence::Quit);
+
+    fileMenu->addAction(tr("S&nippet Editor"), this, SLOT(showSnippetEditor()),
+                        QKeySequence(Qt::CTRL+Qt::ALT+Qt::Key_S));
+
 }
 void MainWindow::setupHelpMenu()
 {
@@ -247,7 +252,7 @@ void MainWindow::tabCloseRequested(int index) {
 }
 
 void MainWindow::setupEditor() {
-    m_formats = new QFormatScheme("/home/soda/.codemate/qxs/python.qxf", this);
+    m_formats = new QFormatScheme("/home/soda/.codemate/qxs/formats.qxf", this);
     QDocument::setDefaultFormatScheme(m_formats);
 
     QLineMarksInfoCenter::instance()->loadMarkTypes("/home/soda/.codemate/qxs/marks.qxm");
@@ -267,7 +272,13 @@ void MainWindow::setupEditor() {
 QLanguageFactory * MainWindow::getEditorLanguageFactory(){
     return m_languages;
 }
-
 QSnippetBinding * MainWindow::getEditorSnippetBinding() {
     return m_snippetBinding;
+}
+
+void MainWindow::showSnippetEditor() {
+    if(snippetEditor == 0) {
+        snippetEditor = new SnippetEditor(this, m_snippetManager);
+    }
+    snippetEditor->show();
 }

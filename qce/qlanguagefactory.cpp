@@ -275,6 +275,7 @@ void QLanguageFactory::addCompletionEngine(QCodeCompletionEngine *e)
 {
 	foreach ( QString l, m_languages )
 	{
+                //qDebug("lang match for %s", l);
 		if ( l == e->language() )
 		{
 			m_data[l].e = e;

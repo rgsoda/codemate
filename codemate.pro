@@ -13,12 +13,14 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     snapopen.cpp \
-    mateeditor.cpp
+    mateeditor.cpp \
+    snippeteditor.cpp
 
 
 HEADERS  += mainwindow.h \
     snapopen.h \
-    mateeditor.h
+    mateeditor.h \
+    snippeteditor.h
 
 
 FORMS    +=
