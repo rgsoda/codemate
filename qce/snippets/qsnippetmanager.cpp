@@ -26,6 +26,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
+#include <iostream>
 
 /*
 class StubAffector : public QEditor::PlaceHolder::Affector
@@ -50,6 +51,7 @@ QSnippetManager::QSnippetManager(QObject *p)
 {
 	addPatternLoader(new QCE::Snippets::PlainText::Loader);
 	addPatternLoader(new QCE::Snippets::Simple::Loader);
+
 }
 
 QSnippetManager::~QSnippetManager()
@@ -124,11 +126,11 @@ bool QSnippetManager::loadSnippetFromFile(const QString& file, const QString& ty
 	
 	if ( !f.open(QFile::ReadOnly | QFile::Text) )
 	{
-		qWarning("Unable to load snippet from %s", qPrintable(file));
+                //qWarning("Unable to load snippet from %s", qPrintable(file));
 		return false;
 	}
 	
-	//qDebug("loading from : %s", qPrintable(file));
+        qDebug("loading from : %s", qPrintable(file));
 	
 	QString s = QString::fromLocal8Bit(f.readAll());
 	
@@ -139,7 +141,7 @@ bool QSnippetManager::loadSnippetFromFile(const QString& file, const QString& ty
 	
 	if ( metaMatch )
 	{
-		//qDebug("meta! : %i => %s", idx, qPrintable(meta.cap(0)));
+                //qDebug("meta! : %i => %s", idx, qPrintable(meta.cap(0)));
 		s.remove(idx, meta.matchedLength());
 	}
 	

@@ -4,6 +4,23 @@
 #include "mateeditor.h"
 #include "qce/qeditor.h"
 
+#include "qce/widgets/qpanel.h"
+#include "qce/qeditor.h"
+#include "qce/qcodeedit.h"
+#include "qce/qeditsession.h"
+
+#include "qce/document/qdocument.h"
+#include "qce/document/qdocumentline.h"
+#include "qce/document/qdocumentcursor.h"
+
+#include "qce/qformatscheme.h"
+#include "qce/qlanguagefactory.h"
+
+#include "qce/qlinemarksinfocenter.h"
+
+#include "qce/snippets/qsnippetmanager.h"
+#include "qce/snippets/qsnippetbinding.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), snapopen(0)
 {
@@ -11,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
     setupFileMenu();
     setupHelpMenu();
     setupWidgets();
+    setupEditor();
+
 
     setWindowTitle(tr("CodeMate"));
     resize(800, 600);
@@ -35,6 +54,7 @@ void MainWindow::setupWidgets()
     model = new QFileSystemModel;
     model->setRootPath(QDir::currentPath());
     tree = new QTreeView(dock);
+    tree->setFocusPolicy(Qt::ClickFocus);
     tree->setModel(model);
     tree->setRootIndex(model->index(QDir::currentPath()));
     tree->setFont(font);
@@ -47,11 +67,13 @@ void MainWindow::setupWidgets()
     tree->setColumnHidden(3,true);
     tree->sortByColumn(0);
     dock->setWidget(tree);
+    dock->setFocusPolicy(Qt::ClickFocus);
     connect(tree, SIGNAL(doubleClicked(QModelIndex)), this,
                        SLOT(doubleClicked(QModelIndex)));
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     tabWidget = new QTabWidget(this);
+    tabWidget->setFocusPolicy(Qt::ClickFocus);
     tabWidget->setTabShape(QTabWidget::Rounded);
     tabWidget->setTabsClosable(true);
     tabWidget->setFont(font);
@@ -82,7 +104,6 @@ void MainWindow::about()
 }
 void MainWindow::newFile()
 {
-
     newEditor("unnamed.txt");
 }
 void MainWindow::openFile() {
@@ -96,38 +117,51 @@ void MainWindow::openFile(QString &path)
         QFile file(path);
         if (file.open(QFile::ReadOnly | QFile::Text)) {
             if (openFileWidgetList.contains(path)) {
-                tabWidget->setCurrentWidget(openFileWidgetList.value(path));
+                tabWidget->setCurrentIndex(openFileWidgetList.value(path));
             } else {
                 openFileWidgetList.insert(path,newEditor(path));
-                tabWidget->setCurrentIndex(0);
             }
+
+
         }
     }
 }
 bool MainWindow::closeActualFile() {
-    QString filename = openFileWidgetList.key(tabWidget->currentWidget());
-    MateEditor *editor = dynamic_cast<MateEditor*>(tabWidget->currentWidget());
-    if(editor->isModified()){
-        statusBar->showMessage(tr("Save first"), 2000);
-        return false;
-    }
-    openFileWidgetList.remove(filename);
-    delete tabWidget->currentWidget();
-    return true;
+    QString filename = openFileWidgetList.key(tabWidget->currentIndex());
+    return closeFile(filename);
 }
 bool MainWindow::closeFile(QString &filename)
 {
-    MateEditor *editor = dynamic_cast<MateEditor*>(openFileWidgetList.value(filename));
-    if(editor->isModified()){
-        statusBar->showMessage(tr("Save first"), 2000);
-        return false;
+    QEditor *qedit = dynamic_cast<QEditor*>(tabWidget->widget(openFileWidgetList.value(filename)));
+    if ( qedit->isContentModified() )
+    {
+            int ret = QMessageBox::warning(
+                                                    this,
+                                                    tr("About to quit"),
+                                                    tr(
+                                                            "The open document contains unsaved modifications.\n"
+                                                            "Save it as %1 ?"
+                                                    ).arg(qedit->fileName()),
+                                                    QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                                                    QMessageBox::Yes
+                                            );
+
+            if ( ret == QMessageBox::Cancel )
+            {
+                    return true;
+            } else if ( ret == QMessageBox::Yes ) {
+                    qedit->save();
+            }
     }
+
+
     openFileWidgetList.remove(filename);
     delete tabWidget->currentWidget();
     return true;
 }
 bool MainWindow::saveActualFile(){
-    QString filename = openFileWidgetList.key(tabWidget->currentWidget());
+
+    QString filename = openFileWidgetList.key(tabWidget->currentIndex());
     return saveFile(filename);
 }
 bool MainWindow::saveFile(QString &filename) {
@@ -142,24 +176,28 @@ bool MainWindow::saveFile(QString &filename) {
 
     QTextStream out(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
-
-    //out << dynamic_cast<CodeEditor*>(tabWidget->currentWidget())->document()->toPlainText();
+    QEditor *qedit = dynamic_cast<QEditor*>(tabWidget->widget(openFileWidgetList.value(filename)));
+    qedit->save();
     QApplication::restoreOverrideCursor();
 
     statusBar->showMessage(tr("File saved"), 2000);
-    //dynamic_cast<CodeEditor*>(tabWidget->currentWidget())->setModified(false);
     return true;
 }
-MateEditor *MainWindow::newEditor(QString path)
+int MainWindow::newEditor(QString path)
 {
 
     MateEditor *mate_editor = new MateEditor(this);
     QEditor *editor_widget = mate_editor->getEditor();
+    m_languages->setLanguage(editor_widget, path);
     editor_widget->load(path);
-    editor_widget->setFileName(path);
-    tabWidget->insertTab(tabWidget->currentIndex(), editor_widget ,path);
-    tabWidget->setMovable(true);
-    return mate_editor;
+
+    editSession->addEditor(editor_widget);
+    int nextIndex = tabWidget->currentIndex()+1;
+    tabWidget->insertTab(nextIndex, editor_widget ,QFileInfo(path).fileName());
+    tabWidget->setCurrentIndex(nextIndex);
+
+
+    return nextIndex;
 
 }
 void MainWindow::setupFileMenu()
@@ -208,4 +246,28 @@ void MainWindow::tabCloseRequested(int index) {
     delete tabWidget->widget(index);
 }
 
+void MainWindow::setupEditor() {
+    m_formats = new QFormatScheme("/home/soda/.codemate/qxs/python.qxf", this);
+    QDocument::setDefaultFormatScheme(m_formats);
 
+    QLineMarksInfoCenter::instance()->loadMarkTypes("/home/soda/.codemate/qxs/marks.qxm");
+
+    editSession = new QEditSession("session", this);
+
+    m_snippetManager = new QSnippetManager(this);
+
+    m_snippetManager->loadSnippetsFromDirectory("/home/soda/.codemate/snippets");
+    m_snippetBinding = new QSnippetBinding(m_snippetManager);
+
+
+    m_languages = new QLanguageFactory(m_formats, this);
+    m_languages->addDefinitionPath("/home/soda/.codemate/qxs/");
+}
+
+QLanguageFactory * MainWindow::getEditorLanguageFactory(){
+    return m_languages;
+}
+
+QSnippetBinding * MainWindow::getEditorSnippetBinding() {
+    return m_snippetBinding;
+}

@@ -2661,19 +2661,32 @@ void QEditor::keyPressEvent(QKeyEvent *e)
 		
 		// placeholders handling
 		bool bHandled = false;
-		
-		if ( m_placeHolders.count() && e->modifiers() == Qt::ControlModifier )
-		{
-			if ( e->key() == Qt::Key_Up || e->key() == Qt::Key_Left )
-			{
-				bHandled = true;
-				previousPlaceHolder();
-			} else if ( e->key() == Qt::Key_Down || e->key() == Qt::Key_Right ) {
-				bHandled = true;
-				nextPlaceHolder();
-			}
-		}
-		
+                // soda # also stupid key binding
+
+                if ( m_placeHolders.count() && e->modifiers() == Qt::ControlModifier )
+                {
+                        if ( e->key() == Qt::Key_Up || e->key() == Qt::Key_Left )
+                        {
+                                bHandled = true;
+                                previousPlaceHolder();
+                        } else if ( e->key() == Qt::Key_Down || e->key() == Qt::Key_Right ) {
+                                bHandled = true;
+                                nextPlaceHolder();
+                        }
+                }
+
+//                if ( m_placeHolders.count() )
+//                {
+//                        if ( e->modifiers() == Qt::Key_Shift && e->key() == Qt::Key_Tab)
+//                        {
+//                                bHandled = true;
+//                                previousPlaceHolder();
+//                        } else if ( e->key() == Qt::Key_Tab) {
+//                                bHandled = true;
+//                                nextPlaceHolder();
+//                        }
+//                }
+
 		// default shortcuts
 		if ( e->matches(QKeySequence::Undo) )
 		{

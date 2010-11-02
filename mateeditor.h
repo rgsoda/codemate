@@ -3,39 +3,26 @@
 
 #include <QWidget>
 #include "qce/qeditor.h"
+#include "mainwindow.h"
 
 class QEditor;
 class QCodeEdit;
-class QEditConfig;
-class QEditSession;
-class QFormatScheme;
-class QLanguageFactory;
-
-class QSnippetBinding;
-class QSnippetManager;
+class MainWindow;
 
 class MateEditor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MateEditor(QWidget *parent = 0);
+    explicit MateEditor(MainWindow *parent = 0);
     bool isModified() { return true; }
     QEditor *getEditor();
-
+    void load(const QString &file);
 signals:
 
 public slots:
 private:
-    QEditSession *m_session;
-
-    QEditConfig *m_config;
-
     QCodeEdit *m_editControl;
-    QFormatScheme *m_formats;
-    QLanguageFactory *m_languages;
-
-    //QSnippetBinding *m_snippetBinding;
-    //QSnippetManager *m_snippetManager;
+    MainWindow *mainWindow;
 };
 
 #endif // MATEEDITOR_H

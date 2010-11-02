@@ -149,7 +149,7 @@ void QLanguageFactory::setLanguage(QEditor *e, const QString& file)
 			{
 				const QStringList& exts = m_data[lang].extensions;
 				
-				//qDebug("%s in (%s) ?", qPrintable(ext), qPrintable(exts.join(" ")));
+                                qDebug("%s in (%s) ?", qPrintable(ext), qPrintable(exts.join(" ")));
 				
 				foreach ( QString x, exts )
 				{
@@ -190,7 +190,7 @@ void QLanguageFactory::setLanguage(QEditor *e, const QString& file)
 	
 	if ( lang.isEmpty() )
 	{
-		//qDebug("no lang match for %s", qPrintable(file));
+                qDebug("no lang match for %s", qPrintable(file));
 		e->setLanguageDefinition(0);
 		e->setCompletionEngine(0);
 		e->document()->setFormatScheme(m_defaultFormatScheme);
@@ -199,7 +199,7 @@ void QLanguageFactory::setLanguage(QEditor *e, const QString& file)
 			e->highlight();
 		
 	} else {
-		//qDebug("lang match for %s : %s", qPrintable(file), qPrintable(lang));
+                qDebug("lang match for %s : %s", qPrintable(file), qPrintable(lang));
 		const LangData& data = m_data[lang];
 		
 		e->setLanguageDefinition(data.d);

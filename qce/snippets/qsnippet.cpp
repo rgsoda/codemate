@@ -87,7 +87,7 @@ bool QCE::Snippets::PlainText::loadSnippet(QSnippet *snip, const QString& patter
 	
 	if ( !target )
 	{
-		qWarning("snippet/loader type mismatch.");
+                //qWarning("snippet/loader type mismatch.");
 		return false;
 	}
 	

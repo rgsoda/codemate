@@ -15,56 +15,20 @@
 #include "qce/qlinemarksinfocenter.h"
 
 
-MateEditor::MateEditor(QWidget *parent) :
+MateEditor::MateEditor(MainWindow *parent) :
     QWidget(parent)
 {
 
-    // QCE setup
-    m_formats = new QFormatScheme("qxs/python.qxf", this);
-    QDocument::setDefaultFormatScheme(m_formats);
-
-    QLineMarksInfoCenter::instance()->loadMarkTypes("qxs/marks.qxm");
-
-
-    m_session = new QEditSession("session", this);
-
-//    m_snippetManager = new QSnippetManager(this);
-//    m_snippetManager->loadSnippetsFromDirectory("snippets");
-
-//    m_snippetBinding = new QSnippetBinding(m_snippetManager);
-
-
-    m_languages = new QLanguageFactory(m_formats, this);
-    m_languages->addDefinitionPath("qxs");
+    mainWindow = parent;
     m_editControl = new QCodeEdit(this);
-    m_editControl
-            ->addPanel("Line Mark Panel", QCodeEdit::West, true)
-            ;//->setShortcut(QKeySequence("F6"));
-
-    m_editControl
-            ->addPanel("Line Number Panel", QCodeEdit::West, true)
-            ;//->setShortcut(QKeySequence("F11"));
-
-    m_editControl
-            ->addPanel("Fold Panel", QCodeEdit::West, true)
-            ;//->setShortcut(QKeySequence("F9"));
-
-    m_editControl
-            ->addPanel("Line Change Panel", QCodeEdit::West, true)
-            ; //->setShortcut(QKeySequence("F11"));
-
-    m_editControl
-            ->addPanel("Status Panel", QCodeEdit::South, true);
-
-    m_editControl
-            ->addPanel("Goto Line Panel", QCodeEdit::South);
-
-    m_editControl
-            ->addPanel("Search Replace Panel", QCodeEdit::South);
-
-//    m_editControl->editor()->setInputBinding(m_snippetBinding);
-
-
+    m_editControl->addPanel("Line Mark Panel", QCodeEdit::West, true);
+    m_editControl->addPanel("Line Number Panel", QCodeEdit::West, true);
+    m_editControl->addPanel("Fold Panel", QCodeEdit::West, true);
+    m_editControl->addPanel("Line Change Panel", QCodeEdit::West, true);
+    m_editControl->addPanel("Status Panel", QCodeEdit::South, true);
+    m_editControl->addPanel("Goto Line Panel", QCodeEdit::South);
+    m_editControl->addPanel("Search Replace Panel", QCodeEdit::South);
+    //m_editControl->editor()->setInputBinding(m_snippetBinding);
 }
 
 QEditor *MateEditor::getEditor() {

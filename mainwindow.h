@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <snapopen.h>
 #include <mateeditor.h>
+#include "qce/qeditsession.h"
 
 class QTextEdit;
 class QListWidget;
@@ -16,8 +17,19 @@ class QFileSystemModel;
 class QPlainTextEdit;
 class QTabBar;
 class QFile;
-
+class QEditor;
 class QSettings;
+
+class QEditSession;
+class QEditor;
+class QCodeEdit;
+class QEditConfig;
+class QFormatScheme;
+class QLanguageFactory;
+
+class QSnippetBinding;
+class QSnippetManager;
+class MateEditor;
 
 class MainWindow : public QMainWindow
 {
@@ -43,24 +55,37 @@ public slots:
     void tabCloseRequested(int);
 
     void snapOpen();
-
+    QLanguageFactory* getEditorLanguageFactory();
+    QSnippetBinding* getEditorSnippetBinding();
 
 private:
 
     void setupFileMenu();
     void setupHelpMenu();
     void setupWidgets();
+    void setupEditor();
     void initSettings();
 
     //SciEditor *newEditor(QFile &file);
-    MateEditor *newEditor(QString path);
+    int newEditor(QString path);
     QTreeView *tree;
     QFileSystemModel *model;
     QTabWidget *tabWidget;
     QStatusBar *statusBar;
-    QMap<QString,QWidget *> openFileWidgetList;
+    QMap<QString,int> openFileWidgetList;
     QSettings settings;
     SnapOpen *snapopen;
+    QEditSession *editSession;
+
+    QEditConfig *m_config;
+
+    QCodeEdit *m_editControl;
+    QFormatScheme *m_formats;
+    QLanguageFactory *m_languages;
+
+    QSnippetBinding *m_snippetBinding;
+    QSnippetManager *m_snippetManager;
+
 };
 
 
