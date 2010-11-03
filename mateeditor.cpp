@@ -25,10 +25,10 @@ MateEditor::MateEditor(MainWindow *parent) :
     //m_editControl->addPanel("Line Mark Panel", QCodeEdit::West, true);
     m_editControl->addPanel("Line Number Panel", QCodeEdit::West, true);
     m_editControl->addPanel("Fold Panel", QCodeEdit::West, true);
-    m_editControl->addPanel("Line Change Panel", QCodeEdit::West, true);
-    m_editControl->addPanel("Status Panel", QCodeEdit::South, true);
-    m_editControl->addPanel("Goto Line Panel", QCodeEdit::South);
-    m_editControl->addPanel("Search Replace Panel", QCodeEdit::South);
+    //m_editControl->addPanel("Line Change Panel", QCodeEdit::West, true);
+    //m_editControl->addPanel("Status Panel", QCodeEdit::South, true);
+    //m_editControl->addPanel("Goto Line Panel", QCodeEdit::South);
+    //m_editControl->addPanel("Search Replace Panel", QCodeEdit::South);
     //QCodeCompletionEngine *completionEngine = new QCodeCompletionEngine(this);
     //completionEngine->run();
     //m_editControl->editor()->setCompletionEngine(completionEngine);

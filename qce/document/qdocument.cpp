@@ -2719,9 +2719,9 @@ void QDocumentLineHandle::draw(	QPainter *p,
 				
 				if ( (i + 1) < sel.count() )
 					max = qMin(sel[i + 1], max);
-				
-				for ( int j = sel[i]; j < max; ++j )
-					merged[j] |= 0x8000;
+// # soda
+//				for ( int j = sel[i]; j < max; ++j )
+//					merged[j] |= 0x8000;
 			}
 		}
 		
