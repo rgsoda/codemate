@@ -22,6 +22,7 @@
 #include "qce/snippets/qsnippetbinding.h"
 #include "qce/snippets/qsnippetedit.h"
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), snapopen(0), snippetEditor(0)
 {
@@ -189,8 +190,15 @@ int MainWindow::newEditor(QString path)
     MateEditor *mate_editor = new MateEditor(this);
     QEditor *editor_widget = mate_editor->getEditor();
     m_languages->setLanguage(editor_widget, path);
+
+    m_languages->addCompletionEngine(buffCompletionEngine);
+    editor_widget->setCompletionEngine(buffCompletionEngine);
+    buffCompletionEngine->setEditor(editor_widget);
+    updateCompleter();
+
     editor_widget->load(path);
     editor_widget->setInputBinding(m_snippetBinding);
+    editor_widget->addInputBinding(completionBinding);
 
     editSession->addEditor(editor_widget);
     int nextIndex = tabWidget->currentIndex()+1;
@@ -267,6 +275,10 @@ void MainWindow::setupEditor() {
 
     m_languages = new QLanguageFactory(m_formats, this);
     m_languages->addDefinitionPath("/home/soda/.codemate/qxs/");
+
+    buffCompletionEngine = new BufferCompletionEngine();
+    completionBinding = new CompleteBinding(buffCompletionEngine);
+
 }
 
 QLanguageFactory * MainWindow::getEditorLanguageFactory(){
@@ -281,4 +293,10 @@ void MainWindow::showSnippetEditor() {
         snippetEditor = new SnippetEditor(this, m_snippetManager);
     }
     snippetEditor->show();
+}
+void MainWindow::updateCompleter()
+{
+    QStringList words;
+    words << "soda" << "loda";
+    //latexCompleter->setWords(words);
 }

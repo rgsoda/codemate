@@ -9,6 +9,8 @@
 #include <snippeteditor.h>
 #include <mateeditor.h>
 #include "qce/qeditsession.h"
+#include "completebinding.h"
+#include "buffercompletionengine.h"
 
 class QTextEdit;
 class QListWidget;
@@ -31,6 +33,7 @@ class QLanguageFactory;
 class QSnippetBinding;
 class QSnippetManager;
 class MateEditor;
+class LatexCompleter;
 
 class MainWindow : public QMainWindow
 {
@@ -69,7 +72,7 @@ private:
     void setupWidgets();
     void setupEditor();
     void initSettings();
-
+    void updateCompleter();
 
     //SciEditor *newEditor(QFile &file);
     int newEditor(QString path);
@@ -90,8 +93,11 @@ private:
     QLanguageFactory *m_languages;
 
     QSnippetBinding *m_snippetBinding;
-    QSnippetManager *m_snippetManager;
 
+    QSnippetManager *m_snippetManager;
+    LatexCompleter *latexCompleter;
+    BufferCompletionEngine *buffCompletionEngine;
+    CompleteBinding *completionBinding;
 };
 
 

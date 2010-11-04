@@ -67,6 +67,7 @@ void SnapOpen::prepareWidgets()
     filesTable->setShowGrid(false);
 
     fileNameInput = new QLineEdit();
+
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(fileNameInput);
     mainLayout->addWidget(filesTable);
