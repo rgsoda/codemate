@@ -2982,6 +2982,7 @@ void QEditor::mouseMoveEvent(QMouseEvent *e)
 */
 void QEditor::mousePressEvent(QMouseEvent *e)
 {
+
 	foreach ( QEditorInputBindingInterface *b, m_bindings )
 		if ( b->mousePressEvent(e, this) )
 			return;
@@ -3042,6 +3043,7 @@ void QEditor::mousePressEvent(QMouseEvent *e)
 						{
 							if ( l != m_cursor.lineNumber() )
 								addCursorMirror(QDocumentCursor(m_doc, l, org));
+
 							
 						}
 						
@@ -3057,9 +3059,10 @@ void QEditor::mousePressEvent(QMouseEvent *e)
 					}
 				} else if ( (e->modifiers() & Qt::AltModifier) ) {
 					addCursorMirror(cursor);
+                                        qDebug("multicolumn edit");
 				}
 			} else {
-				
+
 				const QDocumentCursor& cur = m_cursor;
 				
 				if ( m_cursor.hasSelection() )

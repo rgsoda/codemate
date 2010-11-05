@@ -85,7 +85,7 @@ void MainWindow::setupWidgets()
 
     QFile styleDefinition(QDir::homePath()+"/.codemate/a.qss");
     if (!styleDefinition.open(QIODevice::ReadOnly | QIODevice::Text))
-        statusBar->showMessage("CSSStyle not found");
+        statusBar->showMessage("CSSStyle not found",200);
     QString content = styleDefinition.readAll();
 
     tabWidget->setStyleSheet(content);
@@ -181,7 +181,8 @@ bool MainWindow::saveFile(QString &filename) {
     qedit->save();
     QApplication::restoreOverrideCursor();
 
-    statusBar->showMessage(tr("File saved"), 2000);
+
+    statusBar->showMessage(tr("File saved"), 200);
     return true;
 }
 int MainWindow::newEditor(QString path)
@@ -196,9 +197,21 @@ int MainWindow::newEditor(QString path)
     buffCompletionEngine->setEditor(editor_widget);
     updateCompleter();
 
+    QStringList wordList;
+    wordList << "alpha" << "omega" << "omicron" << "zeta";
+//    QCompleter *completer = new QCompleter(wordList,this);
+
+//    completer->setWidget(editor_widget);
+//    completer->popup()->show();
+
+
+
     editor_widget->load(path);
     editor_widget->setInputBinding(m_snippetBinding);
     editor_widget->addInputBinding(completionBinding);
+
+
+    buffCompletionEngine->setWords(wordList);
 
     editSession->addEditor(editor_widget);
     int nextIndex = tabWidget->currentIndex()+1;
@@ -260,21 +273,21 @@ void MainWindow::tabCloseRequested(int index) {
 }
 
 void MainWindow::setupEditor() {
-    m_formats = new QFormatScheme("/home/soda/.codemate/qxs/formats.qxf", this);
+    m_formats = new QFormatScheme(QDir::home().absolutePath() +"/.codemate/qxs/formats.qxf", this);
     QDocument::setDefaultFormatScheme(m_formats);
 
-    QLineMarksInfoCenter::instance()->loadMarkTypes("/home/soda/.codemate/qxs/marks.qxm");
+    QLineMarksInfoCenter::instance()->loadMarkTypes(QDir::home().absolutePath() +"/.codemate/qxs/marks.qxm");
 
     editSession = new QEditSession("session", this);
 
     m_snippetManager = new QSnippetManager(this);
 
-    m_snippetManager->loadSnippetsFromDirectory("/home/soda/.codemate/snippets");
+    m_snippetManager->loadSnippetsFromDirectory(QDir::home().absolutePath() +"/.codemate/snippets");
     m_snippetBinding = new QSnippetBinding(m_snippetManager);
 
 
     m_languages = new QLanguageFactory(m_formats, this);
-    m_languages->addDefinitionPath("/home/soda/.codemate/qxs/");
+    m_languages->addDefinitionPath(QDir::home().absolutePath() +"/.codemate/qxs/");
 
     buffCompletionEngine = new BufferCompletionEngine();
     completionBinding = new CompleteBinding(buffCompletionEngine);
@@ -296,7 +309,4 @@ void MainWindow::showSnippetEditor() {
 }
 void MainWindow::updateCompleter()
 {
-    QStringList words;
-    words << "soda" << "loda";
-    //latexCompleter->setWords(words);
 }

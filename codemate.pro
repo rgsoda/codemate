@@ -14,17 +14,21 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     snapopen.cpp \
     mateeditor.cpp \
-    snippeteditor.cpp
+    snippeteditor.cpp \
+    buffercompletionengine.cpp \
+    completebinding.cpp
 
 
 HEADERS  += mainwindow.h \
     snapopen.h \
     mateeditor.h \
-    snippeteditor.h
+    snippeteditor.h \
+    buffercompletionengine.h \
+    completebinding.h
 
 
 FORMS    +=
-LIBS     += -L/home/soda/Code/codemate -lqcodeedit
+LIBS     += -L. -lqcodeedit
 
 RESOURCES +=
 

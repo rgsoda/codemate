@@ -2,8 +2,7 @@
 #define BUFFERCOMPLETIONENGINE_H
 
 #include "qce/qcodecompletionengine.h"
-#include "QCompleter"
-
+#include "QListView"
 class QComleter;
 class BufferCompletionEngine : public QCodeCompletionEngine
 {
@@ -20,6 +19,10 @@ public:
     QStringList wordList;
 
     void completeText(const QDocumentCursor& c);
+    QListView *comletionList;
+
+    bool completionInProgress;
+
 protected:
     virtual void run();
     virtual bool eventFilter(QObject *o, QEvent *e);
