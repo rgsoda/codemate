@@ -18,18 +18,9 @@ QString CompleteBinding::name() const
 
 bool CompleteBinding::keyPressEvent(QKeyEvent *event, QEditor *editor)
 {
-    if ( (event->modifiers() & Qt::CTRL) && (event->key() == Qt::Key_Space || event->text() == " ") ) {
-        if(this->compEngine->completionInProgress) {
-            if(event->key() == Qt::Key_Up) {
-                qDebug("key binging for qlistview ...");
-                qDebug("remaped UP");
-                return false;
-            }
-        }
-        this->compEngine->completeText(editor->cursor());
-        this->compEngine->completionInProgress=true;
-        qDebug("autocomptele starts");
-    }
 
+    if ( (event->modifiers() & Qt::CTRL) && (event->key() == Qt::Key_Space || event->text() == " ") ) {
+        this->compEngine->completeText(editor->cursor());
+    }
     return QEditorInputBinding::keyPressEvent(event, editor);
 }

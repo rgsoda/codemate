@@ -43,7 +43,7 @@ class QCE_EXPORT QCodeCompletionEngine : public QObject
 		QCodeCompletionEngine(QObject *p = 0);
 		virtual ~QCodeCompletionEngine();
 		
-                virtual QCodeCompletionEngine* clone() = 0;
+		virtual QCodeCompletionEngine* clone() = 0;
 		
 		virtual QString language() const = 0;
 		virtual QStringList extensions() const = 0;

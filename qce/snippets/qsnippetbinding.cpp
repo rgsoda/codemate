@@ -87,20 +87,32 @@ QString QSnippetBinding::name() const
 
 bool QSnippetBinding::keyPressEvent(QKeyEvent *event, QEditor *editor)
 {
-        if ( (event->modifiers() & Qt::CTRL) && (event->key() == Qt::Key_Space || event->text() == " ") )
-        // soda # snippets should be activated after tab key
-        // soda # ctrl + space gonna stay for autocomplete
-
-        // if ((event->key() == Qt::Key_Tab || event->text() == " ") )
+	/*
+	if ( event->modifiers() & Qt::ControlModifier )
+	{
+		for ( int i = 0; i < qMin(10, m->snippetCount()); ++i )
+		{
+			if ( event->key() == (Qt::Key_F1 + i) )
+			{
+				m->snippet(i)->insert(editor);
+				return true;
+			}
+		}
+	}
+	*/
+	
+	if ( (event->modifiers() & Qt::AltModifier) && (event->key() == Qt::Key_Space || event->text() == " ") )
 	{
 		QDocumentCursor c = editor->cursor();
-                //c.select(QDocumentCursor::SelectWord);
-                if ( !c.hasSelection() )
-                {
-                        c.movePosition(1, QDocumentCursor::PreviousWord, QDocumentCursor::KeepAnchor);
-                        editor->setCursor(c);
-                }
-
+		
+		//c.select(QDocumentCursor::SelectWord);
+		
+		if ( !c.hasSelection() )
+		{
+			c.movePosition(1, QDocumentCursor::PreviousWord, QDocumentCursor::KeepAnchor);
+			editor->setCursor(c);
+		}
+		
 		QString s = c.selectedText();
 		
 		for ( int i = 0; i < m_manager->snippetCount(); ++i )
@@ -108,7 +120,7 @@ bool QSnippetBinding::keyPressEvent(QKeyEvent *event, QEditor *editor)
 			QSnippet *snip = m_manager->snippet(i);
 			
 			if ( snip->name() == s )
-                        {
+			{
 				snip->insert(editor);
 				return true;
 			}

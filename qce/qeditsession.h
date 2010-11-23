@@ -42,11 +42,21 @@ class QCE_EXPORT QEditSession : public QObject
 	Q_OBJECT
 	
 	public:
+		enum SessionFormat
+		{
+			QCESession0,
+			QCESession1,
+			
+			FormatCount
+		};
+		
 		QEditSession(QObject *p = 0);
 		QEditSession(const QString& f, QObject *p = 0);
 		virtual ~QEditSession();
 		
 		int autoUpdateInterval() const;
+		
+		int format() const;
 		
 		QString fileName() const;
 		
@@ -57,6 +67,8 @@ class QCE_EXPORT QEditSession : public QObject
 		virtual void updateData();
 		
 		virtual void setAutoUpdateInterval(int ms);
+		
+		virtual void setFormat(int fmt);
 		
 		virtual void setFileName(const QString& filename, bool restore = false);
 		
@@ -82,6 +94,7 @@ class QCE_EXPORT QEditSession : public QObject
 		
 		virtual QEditor* createEditor();
 		
+	public:
 		struct Cursor
 		{
 			Cursor()
@@ -105,6 +118,7 @@ class QCE_EXPORT QEditSession : public QObject
 		
 		struct Document
 		{
+			quint8 flags;
 			QString fileName;
 			QDateTime timeStamp;
 			
@@ -114,10 +128,12 @@ class QCE_EXPORT QEditSession : public QObject
 			QHash<int, QList<int> > marks;
 		};
 		
+	protected:
 		virtual void update(QEditor *e, Document *d);
 		
 		int m_id;
 		int m_delay;
+		int m_format;
 		QString m_fileName;
 		
 		QList<QEditor*> m_editors;

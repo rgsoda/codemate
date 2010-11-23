@@ -96,7 +96,7 @@ private:
 
     QSnippetManager *m_snippetManager;
     LatexCompleter *latexCompleter;
-    BufferCompletionEngine *buffCompletionEngine;
+    //BufferCompletionEngine *buffCompletionEngine;
     CompleteBinding *completionBinding;
 };
 

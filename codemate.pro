@@ -36,5 +36,8 @@ OTHER_FILES += \
     codemate.style
 DEPENDPATH += . qce
 INCLUDEPATH += . qce
+
 DEPENDPATH += . qce/document qce/language qce/widgets qce/qnfa
 INCLUDEPATH += . qce/document qce/language qce/widgets qce/qnfa
+
+SUBDIRS = qce

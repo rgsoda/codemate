@@ -1539,7 +1539,7 @@ QList<QEditorInputBindingInterface*> QEditor::inputBindings() const
 }
 
 /*!
-	\brief Set the current input binding
+	\brief Add an input binding
 */
 void QEditor::addInputBinding(QEditorInputBindingInterface *b)
 {
@@ -1565,7 +1565,7 @@ void QEditor::addInputBinding(QEditorInputBindingInterface *b)
 }
 
 /*!
-	\brief Set the current input binding
+	\brief Remove an input binding
 */
 void QEditor::removeInputBinding(QEditorInputBindingInterface *b)
 {
@@ -2661,32 +2661,19 @@ void QEditor::keyPressEvent(QKeyEvent *e)
 		
 		// placeholders handling
 		bool bHandled = false;
-                // soda # also stupid key binding
-
-                if ( m_placeHolders.count() && e->modifiers() == Qt::ControlModifier )
-                {
-                        if ( e->key() == Qt::Key_Up || e->key() == Qt::Key_Left )
-                        {
-                                bHandled = true;
-                                previousPlaceHolder();
-                        } else if ( e->key() == Qt::Key_Down || e->key() == Qt::Key_Right ) {
-                                bHandled = true;
-                                nextPlaceHolder();
-                        }
-                }
-
-//                if ( m_placeHolders.count() )
-//                {
-//                        if ( e->modifiers() == Qt::Key_Shift && e->key() == Qt::Key_Tab)
-//                        {
-//                                bHandled = true;
-//                                previousPlaceHolder();
-//                        } else if ( e->key() == Qt::Key_Tab) {
-//                                bHandled = true;
-//                                nextPlaceHolder();
-//                        }
-//                }
-
+		
+		if ( m_placeHolders.count() && e->modifiers() == Qt::ControlModifier )
+		{
+			if ( e->key() == Qt::Key_Up || e->key() == Qt::Key_Left )
+			{
+				bHandled = true;
+				previousPlaceHolder();
+			} else if ( e->key() == Qt::Key_Down || e->key() == Qt::Key_Right ) {
+				bHandled = true;
+				nextPlaceHolder();
+			}
+		}
+		
 		// default shortcuts
 		if ( e->matches(QKeySequence::Undo) )
 		{
@@ -2982,7 +2969,6 @@ void QEditor::mouseMoveEvent(QMouseEvent *e)
 */
 void QEditor::mousePressEvent(QMouseEvent *e)
 {
-
 	foreach ( QEditorInputBindingInterface *b, m_bindings )
 		if ( b->mousePressEvent(e, this) )
 			return;
@@ -3043,7 +3029,6 @@ void QEditor::mousePressEvent(QMouseEvent *e)
 						{
 							if ( l != m_cursor.lineNumber() )
 								addCursorMirror(QDocumentCursor(m_doc, l, org));
-
 							
 						}
 						
@@ -3059,10 +3044,9 @@ void QEditor::mousePressEvent(QMouseEvent *e)
 					}
 				} else if ( (e->modifiers() & Qt::AltModifier) ) {
 					addCursorMirror(cursor);
-                                        qDebug("multicolumn edit");
 				}
 			} else {
-
+				
 				const QDocumentCursor& cur = m_cursor;
 				
 				if ( m_cursor.hasSelection() )

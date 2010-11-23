@@ -203,7 +203,6 @@ QCodeEdit::QCodeEdit(QEditor *e, QPanelLayout *p)
 QCodeEdit::QCodeEdit(QEditor *e, const QString& l)
  : m_panelsMenu(0)
 {
-        qDebug("QCodeEdit::QCodeEdit(QEditor *e, const QString& l)");
 	m_editor = e;
 	m_watcher = new QPanelWatcher(this);
 	m_layout = new QPanelLayout(l, m_editor);

@@ -36,6 +36,8 @@ HEADERS += qce-config.h \
 	widgets/qgotolinepanel.h \
 	widgets/qsearchreplacepanel.h \
 	widgets/qgotolinedialog.h \
+	widgets/qeditconfig.h \
+	widgets/qformatconfig.h \
 	widgets/qsimplecolorpicker.h \
 	widgets/qcalltip.h \
 	snippets/qsnippet.h \
@@ -71,6 +73,8 @@ SOURCES += qeditor.cpp \
 	widgets/qgotolinepanel.cpp \
 	widgets/qsearchreplacepanel.cpp \
 	widgets/qgotolinedialog.cpp \
+	widgets/qeditconfig.cpp \
+	widgets/qformatconfig.cpp \
 	widgets/qsimplecolorpicker.cpp \
 	widgets/qcalltip.cpp \
 	snippets/qsnippet.cpp \
@@ -96,3 +100,4 @@ qnfa {
 		qnfa/qnfadefinition.cpp \
 		qnfa/xml2qnfa.cpp
 }
+

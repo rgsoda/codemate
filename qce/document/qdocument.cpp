@@ -1790,7 +1790,7 @@ void QDocumentLineHandle::updateWrap() const
 		{
 			c = m_text.at(idx);
 			fmt = idx < composited.count() ? composited[idx] : 0;
-			QFontMetrics fm(fonts.at(fmt));
+			QFontMetrics fm(fmt < fonts.count() ? fonts.at(fmt) : m_doc->font());
 			
 			if ( c.unicode() == '\t' )
 			{
@@ -1831,7 +1831,7 @@ void QDocumentLineHandle::updateWrap() const
 			
 			c = m_text.at(idx);
 			fmt = idx < composited.count() ? composited[idx] : 0;
-			QFontMetrics fm(fonts.at(fmt));
+			QFontMetrics fm(fmt < fonts.count() ? fonts.at(fmt) : m_doc->font());
 			
 			if ( c.unicode() == '\t' )
 			{
@@ -1922,7 +1922,8 @@ int QDocumentLineHandle::cursorToX(int cpos) const
 	while ( idx < cpos )
 	{
 		QChar c = m_text.at(idx);
-		QFontMetrics fm(fonts.at(idx < composited.count() ? composited[idx] : 0));
+		int fmt = idx < composited.count() ? composited[idx] : 0;
+		QFontMetrics fm(fmt < fonts.count() ? fonts.at(fmt) : m_doc->font());
 		
 		if ( c == '\t' )
 		{
@@ -2015,7 +2016,8 @@ int QDocumentLineHandle::xToCursor(int xpos) const
 		
 		while ( idx < m_text.length() )
 		{
-			QFontMetrics fm(fonts.at(idx < composited.count() ? composited[idx] : 0));
+			int fmt = idx < composited.count() ? composited[idx] : 0;
+			QFontMetrics fm(fmt < fonts.count() ? fonts.at(fmt) : m_doc->font());
 			
 			if ( m_text.at(idx) == '\t' )
 			{
@@ -2719,9 +2721,9 @@ void QDocumentLineHandle::draw(	QPainter *p,
 				
 				if ( (i + 1) < sel.count() )
 					max = qMin(sel[i + 1], max);
-// # soda
-//				for ( int j = sel[i]; j < max; ++j )
-//					merged[j] |= 0x8000;
+				
+				for ( int j = sel[i]; j < max; ++j )
+					merged[j] |= 0x8000;
 			}
 		}
 		
@@ -2804,7 +2806,7 @@ void QDocumentLineHandle::draw(	QPainter *p,
 				showTrailing = QDocument::showSpaces() & QDocument::ShowTrailing;
 				
 		//const int fns = nextNonSpaceChar(0);
-		int indent = qMax(m_indent, QDocumentPrivate::m_leftMargin);
+		int indent = qMax(0, m_indent) + QDocumentPrivate::m_leftMargin;
 		
 		int cidx = 0;
 		int rngIdx = 0;
@@ -2833,10 +2835,12 @@ void QDocumentLineHandle::draw(	QPainter *p,
 								
 				}
 				
+				/*
 				if ( pastLead && (r.format & 0x4000) )
 				{
 					indent = QDocumentPrivate::m_leftMargin;
 				}
+				*/
 				
 				++wrap;
 				column = 0;
@@ -5293,11 +5297,13 @@ void QDocumentPrivate::execute(QDocumentCommand *cmd)
 	
 	m_lastModified = QDateTime::currentDateTime();
 	
-	//qDebug("adding a command...");
-	
-	//cmd->setTarget(m_doc);
-	
-	m_commands.push(cmd);
+	if ( m_macros.count() )
+	{
+		cmd->redo();
+		m_macros.top()->addCommand(cmd);
+	} else {
+		m_commands.push(cmd);
+	}
 }
 
 void QDocumentPrivate::draw(QPainter *p, QDocument::PaintContext& cxt)
@@ -6039,14 +6045,20 @@ QDocumentLineHandle* QDocumentPrivate::previous(const QDocumentLineHandle *l) co
 
 void QDocumentPrivate::beginChangeBlock()
 {
-	//qDebug("<macro>");
-	m_commands.beginMacro(QString());
+	QDocumentCommandBlock *b = new QDocumentCommandBlock(m_doc);
+	
+	m_macros.push(b);
 }
 
 void QDocumentPrivate::endChangeBlock()
 {
-	m_commands.endMacro();
-	//qDebug("</macro>");
+	if ( !m_macros.count() )
+		return;
+	
+	QDocumentCommandBlock *b = m_macros.pop();
+	b->setWeakLock(true);
+	
+	execute(b);
 }
 
 /*!

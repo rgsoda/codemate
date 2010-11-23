@@ -192,25 +192,23 @@ int MainWindow::newEditor(QString path)
     QEditor *editor_widget = mate_editor->getEditor();
     m_languages->setLanguage(editor_widget, path);
 
-    m_languages->addCompletionEngine(buffCompletionEngine);
-    editor_widget->setCompletionEngine(buffCompletionEngine);
-    buffCompletionEngine->setEditor(editor_widget);
-    updateCompleter();
-
-    QStringList wordList;
-    wordList << "alpha" << "omega" << "omicron" << "zeta";
-//    QCompleter *completer = new QCompleter(wordList,this);
-
-//    completer->setWidget(editor_widget);
-//    completer->popup()->show();
-
 
 
     editor_widget->load(path);
     editor_widget->setInputBinding(m_snippetBinding);
-    editor_widget->addInputBinding(completionBinding);
 
 
+    BufferCompletionEngine *buffCompletionEngine = new BufferCompletionEngine();
+    completionBinding = new CompleteBinding(buffCompletionEngine);
+    buffCompletionEngine->setEditor(editor_widget);
+    editor_widget->setCompletionEngine(buffCompletionEngine);
+
+    editor_widget->setInputBinding(completionBinding);
+
+    QStringList wordList;
+
+    wordList << editor_widget->text().split(QRegExp("\\W+"), QString::SkipEmptyParts);
+    wordList.removeDuplicates();
     buffCompletionEngine->setWords(wordList);
 
     editSession->addEditor(editor_widget);
@@ -289,8 +287,8 @@ void MainWindow::setupEditor() {
     m_languages = new QLanguageFactory(m_formats, this);
     m_languages->addDefinitionPath(QDir::home().absolutePath() +"/.codemate/qxs/");
 
-    buffCompletionEngine = new BufferCompletionEngine();
-    completionBinding = new CompleteBinding(buffCompletionEngine);
+//    buffCompletionEngine = new BufferCompletionEngine();
+//    completionBinding = new CompleteBinding(buffCompletionEngine);
 
 }
 

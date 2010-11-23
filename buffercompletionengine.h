@@ -2,7 +2,10 @@
 #define BUFFERCOMPLETIONENGINE_H
 
 #include "qce/qcodecompletionengine.h"
-#include "QListView"
+#include <QComboBox>
+#include <QListView>
+#include <QTreeWidget>
+
 class QComleter;
 class BufferCompletionEngine : public QCodeCompletionEngine
 {
@@ -19,16 +22,34 @@ public:
     QStringList wordList;
 
     void completeText(const QDocumentCursor& c);
-    QListView *comletionList;
+    QTreeWidget *tree;
 
-    bool completionInProgress;
+
+    QDocumentCursor actualDocumentCursor;
+
+    bool inCompletion;
+    QString toComplete;
+
+public slots:
+    void insertWord(QString word);
+    void doneCompletion();
+    void treeActivated(QTreeWidgetItem* item ,int col );
 
 protected:
-    virtual void run();
-    virtual bool eventFilter(QObject *o, QEvent *e);
+    bool eventFilter(QObject *obj, QEvent *ev);
+private:
 
-    virtual void complete(QCodeStream *s, const QString& trigger);
-    virtual void complete(const QDocumentCursor& c, const QString& trigger);
+    void setActualCursor(QDocumentCursor &dc);
+    QDocumentCursor getActualCursor();
+    QPointer<QEditor> pEdit;
+
+    int m_max;
+    QString m_trig;
+    QDocumentCursor m_cur;
+    QAction *pForcedTrigger;
+
+    QStringList m_triggers;
+
 
 
 };
